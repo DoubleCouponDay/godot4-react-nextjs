@@ -1,6 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    output: 'export',
     reactStrictMode: false,
     pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'mdx', 'md', 'glsl', 'vert', 'frag'],
     eslint: {
