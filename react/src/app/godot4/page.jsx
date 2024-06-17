@@ -1,9 +1,10 @@
 'use client'
 
 import * as styles from "./styles.module.css"
-import Engine from "./index.js"
+import Engine from "./godot.js"
+import dynamic from "next/dynamic"
 
-export default function Page() {
+function Page() {
     return (
         <html lang="en" id="html">
             <head>
@@ -28,7 +29,7 @@ export default function Page() {
                     <progress id="status-progress"></progress>
                     <div id="status-notice"></div>
                 </div>
-                <script src="index.js">
+                <script src="godot.js">
                     (function() {
                         LoadEngine()
                     }());
@@ -130,3 +131,9 @@ function LoadEngine() {
         }, displayFailureNotice);
     }
 }
+
+const csrPage = dynamic(() => Promise.resolve(Page), {
+    ssr: false,
+  })
+
+export default csrPage;
