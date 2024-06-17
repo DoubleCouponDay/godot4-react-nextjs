@@ -1,9 +1,9 @@
 {
     "configurations": [
         {
-            "type": "msedge",
+            "type": "chrome",
             "request": "launch",
-            "name": "Launch Edge against localhost",
+            "name": "Launch chrome against localhost",
             "url": "http://localhost:3000",
             "webRoot": "${workspaceFolder}",
             "preLaunchTask": "debugserver",

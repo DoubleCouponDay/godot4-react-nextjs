@@ -10,18 +10,7 @@
                 "kind": "build",
                 "isDefault": true
             },
-            "isBackground": true,
-            "problemMatcher": {
-                "owner": "npm",
-                "background": {
-                    "activeOnStart": true,
-                     "beginsPattern": ".*",
-                     "endsPattern": "Finished.+"
-                },
-                "pattern": {
-                    "regexp": "",
-                }
-            }
+            "isBackground": true
         }
     ]
 }
