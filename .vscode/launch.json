@@ -5,8 +5,14 @@
             "request": "launch",
             "name": "Launch chrome against localhost",
             "url": "http://localhost:3000",
-            "webRoot": "${workspaceFolder}",
-            "preLaunchTask": "debugserver",
+            "webRoot": "${workspaceFolder}/react/src/app",
+            "sourceMapPathOverrides": {
+                "webpack:///./*": "${webRoot}/*",
+                "webpack:///src/*": "${webRoot}/*",
+                "webpack:///*": "${webRoot}/*",
+                "http://localhost:3000/_next/static/chunks/*": "${webRoot}/*"
+            },
+            "preLaunchTask": "debugserver"
         }
     ]
 }
