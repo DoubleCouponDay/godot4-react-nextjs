@@ -1,3 +1,5 @@
+'use client'
+
 import * as styles from "./styles.module.css"
 import Engine from "./index.js"
 
@@ -26,13 +28,12 @@ export default function Page() {
                     <progress id="status-progress"></progress>
                     <div id="status-notice"></div>
                 </div>
-                <script src="index.js"></script>
-
-                <script>
+                <script src="index.js">
                     (function() {
                         LoadEngine()
                     }());
                 </script>
+
             </body>
         </html>
     );
