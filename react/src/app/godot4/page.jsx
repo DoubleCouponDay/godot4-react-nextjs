@@ -1,7 +1,7 @@
 'use client'
 
 import * as styles from "./styles.module.css"
-import Engine from "./godot.js"
+import Engine from "../../../../build/index.js"
 import dynamic from "next/dynamic"
 
 function Page() {
@@ -29,7 +29,7 @@ function Page() {
                     <progress id="status-progress"></progress>
                     <div id="status-notice"></div>
                 </div>
-                <script src="godot.js">
+                <script>
                     (function() {
                         LoadEngine()
                     }());
