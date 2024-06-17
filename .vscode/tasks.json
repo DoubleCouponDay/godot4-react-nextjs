@@ -1,0 +1,27 @@
+{
+    "tasks": [
+        {
+            "type": "npm",
+            "script": "dev",
+            "path": "react",
+            "label": "debugserver",
+            "detail": "next dev",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "isBackground": true,
+            "problemMatcher": {
+                "owner": "npm",
+                "background": {
+                    "activeOnStart": true,
+                     "beginsPattern": ".*",
+                     "endsPattern": "Finished.+"
+                },
+                "pattern": {
+                    "regexp": "",
+                }
+            }
+        }
+    ]
+}
