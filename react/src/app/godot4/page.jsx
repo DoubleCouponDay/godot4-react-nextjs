@@ -1,8 +1,9 @@
 import * as styles from "./styles.module.css"
+import Engine from "./index.js"
 
 export default function Page() {
     return (
-        <html lang="en">
+        <html lang="en" id="html">
             <head>
                 <meta charset="utf-8" />
                 <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0" />
@@ -11,7 +12,7 @@ export default function Page() {
                 <link rel="apple-touch-icon" href="index.apple-touch-icon.png" />
             </head>
             
-            <body>
+            <body id="body">
                 <canvas id="canvas">
                     Your browser does not support the canvas tag.
                 </canvas>
@@ -25,7 +26,6 @@ export default function Page() {
                     <progress id="status-progress"></progress>
                     <div id="status-notice"></div>
                 </div>
-
                 <script src="index.js"></script>
 
                 <script>
