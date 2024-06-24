@@ -3,8 +3,14 @@
 import * as styles from "./styles.module.css"
 import Engine from "../../../../build/index.js"
 import dynamic from "next/dynamic"
+import assert from "browser-assert"
+import { useRef, useEffect } from 'react'
 
 function Page() {
+    const statusRef = useRef(null);
+    const progressRef = useRef(null);
+    const noticeRef = useRef(null);
+
     return (
         <html lang="en" id="html">
             <head>
@@ -24,14 +30,14 @@ function Page() {
                     Your browser does not support JavaScript.
                 </noscript>
 
-                <div id="status">
+                <div id="status" ref={statusRef}>
                     <img id="status-splash" src="index.png" alt="" />
-                    <progress id="status-progress"></progress>
-                    <div id="status-notice"></div>
+                    <progress id="status-progress" ref={progressRef}></progress>
+                    <div id="status-notice" ref={noticeRef}></div>
                 </div>
                 <script>
                     (function() {
-                        LoadEngine()
+                        LoadEngine(statusRef, progressRef, noticeRef)
                     }());
                 </script>
 
@@ -40,41 +46,39 @@ function Page() {
     );
 }
 
-function LoadEngine() {
-    const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":30768,"index.wasm":40944965},"focusCanvas":true,"gdextensionLibs":[]};
-    const GODOT_THREADS_ENABLED = true;
-    const engine = new Engine(GODOT_CONFIG);
+function LoadEngine(statusRef, progressRef, noticeRef) {
 
-    const statusOverlay = document.getElementById('status');
-    const statusProgress = document.getElementById('status-progress');
-    const statusNotice = document.getElementById('status-notice');
 
     let initializing = true;
     let statusMode = '';
 
     function setStatusMode(mode) {
+        if(statusRef.current === null || progressRef.current === null || noticeRef.current === null) {
+            return;
+        }
+
         if (statusMode === mode || !initializing) {
             return;
         }
         if (mode === 'hidden') {
-            statusOverlay.remove();
+            statusRef.current.remove();
             initializing = false;
             return;
         }
-        statusOverlay.style.visibility = 'visible';
-        statusProgress.style.display = mode === 'progress' ? 'block' : 'none';
-        statusNotice.style.display = mode === 'notice' ? 'block' : 'none';
+        statusRef.current.style.visibility = 'visible';
+        progressRef.current.style.display = mode === 'progress' ? 'block' : 'none';
+        noticeRef.current.style.display = mode === 'notice' ? 'block' : 'none';
         statusMode = mode;
     }
 
     function setStatusNotice(text) {
-        while (statusNotice.lastChild) {
-            statusNotice.removeChild(statusNotice.lastChild);
+        while (noticeRef.current.lastChild) {
+            noticeRef.current.removeChild(noticeRef.current.lastChild);
         }
         const lines = text.split('\n');
         lines.forEach((line) => {
-            statusNotice.appendChild(document.createTextNode(line));
-            statusNotice.appendChild(document.createElement('br'));
+            noticeRef.current.appendChild(document.createTextNode(line));
+            noticeRef.current.appendChild(document.createElement('br'));
         });
     }
 
@@ -86,50 +90,31 @@ function LoadEngine() {
         initializing = false;
     }
 
-    const missing = Engine.getMissingFeatures({
-        threads: GODOT_THREADS_ENABLED,
-    });
+    setStatusMode('progress');
+    const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":30768,"index.wasm":40944965},"focusCanvas":true,"gdextensionLibs":[]};
+    var engine;
 
-    if (missing.length !== 0) {
-        if (GODOT_CONFIG['serviceWorker'] && GODOT_CONFIG['ensureCrossOriginIsolationHeaders'] && 'serviceWorker' in navigator) {
-            // There's a chance that installing the service worker would fix the issue
-            Promise.race([
-                navigator.serviceWorker.getRegistration().then((registration) => {
-                    if (registration != null) {
-                        return Promise.reject(new Error('Service worker already exists.'));
-                    }
-                    return registration;
-                }).then(() => engine.installServiceWorker()),
-                // For some reason, `getRegistration()` can stall
-                new Promise((resolve) => {
-                    setTimeout(() => resolve(), 2000);
-                }),
-            ]).catch((err) => {
-                console.error('Error while registering service worker:', err);
-            }).then(() => {
-                window.location.reload();
-            });
-        } else {
-            // Display the message as usual
-            const missingMsg = 'Error\nThe following features required to run Godot projects on the Web are missing:\n';
-            displayFailureNotice(missingMsg + missing.join('\n'));
+    useEffect(() => {
+        if(statusRef.current === null || progressRef.current === null || noticeRef.current === null) {
+            return;
         }
-    } else {
-        setStatusMode('progress');
+        engine = new Engine(GODOT_CONFIG);
+        
         engine.startGame({
             'onProgress': function (current, total) {
                 if (current > 0 && total > 0) {
-                    statusProgress.value = current;
-                    statusProgress.max = total;
+                    progressRef.current.value = current;
+                    progressRef.current.max = total;
                 } else {
-                    statusProgress.removeAttribute('value');
-                    statusProgress.removeAttribute('max');
+                    progressRef.current.removeAttribute('value');
+                    progressRef.current.removeAttribute('max');
                 }
             },
         }).then(() => {
             setStatusMode('hidden');
         }, displayFailureNotice);
-    }
+
+    }, [statusRef.current, progressRef.current, noticeRef.current, engine]);
 }
 
 const csrPage = dynamic(() => Promise.resolve(Page), {
